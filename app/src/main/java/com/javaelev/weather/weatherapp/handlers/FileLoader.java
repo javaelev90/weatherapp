@@ -1,10 +1,16 @@
 package com.javaelev.weather.weatherapp.handlers;
 
+import android.content.res.AssetManager;
+import android.content.res.Resources;
+
+import com.javaelev.weather.weatherapp.R;
 import com.javaelev.weather.weatherapp.model.CityInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +18,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 
-// YR: forecast url "https://www.yr.no/place/Sweden/Norrbotten/Lule%C3%A5/forecast.xml"
+// YR forecast url: "https://www.yr.no/place/Sweden/Norrbotten/Lule%C3%A5/forecast.xml"
 //
 //    !!!!!! ALL FIELDS ARE TAB-DELIMITED !!!!!!
 //
@@ -40,10 +46,11 @@ import java.util.HashMap;
 
 public class FileLoader {
 
-    public HashMap<String, String> makeCountryCodesHashMap(){
-        Path pathToFile = Paths.get("./resources/data_csv.csv");
+    public HashMap<String, String> makeCountryCodesHashMap(Resources resources){
+
         HashMap<String, String> codeToCountryMapping = new HashMap<>();
-        try(BufferedReader reader = Files.newBufferedReader(pathToFile, StandardCharsets.UTF_8)){
+        InputStream inputStream = resources.openRawResource(R.raw.data_csv);
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
             //First line is just a description i.e. Name,Code
             reader.readLine();
 
@@ -65,10 +72,11 @@ public class FileLoader {
         return codeToCountryMapping;
     }
 
-    public HashMap<String, CityInfo> makeCityToCityInfoMapping(){
-        Path pathToFile = Paths.get("./resources/cities1000.txt");
+    public HashMap<String, CityInfo> makeCityToCityInfoMapping(Resources resources){
+
         HashMap<String, CityInfo> cityToCountryCodeMapping = new HashMap<>();
-        try(BufferedReader reader = Files.newBufferedReader(pathToFile, StandardCharsets.UTF_8)){
+        InputStream inputStream = resources.openRawResource(R.raw.cities1000);
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
             //First line is just a description i.e. Name,Code
             reader.readLine();
 
@@ -93,10 +101,11 @@ public class FileLoader {
         return cityToCountryCodeMapping;
     }
 
-    public HashMap<String, String> makeCityAreaCodeToCountryAreaMapping(){
-        Path pathToFile = Paths.get("./resources/admin1CodesASCII.txt");
+    public HashMap<String, String> makeCityAreaCodeToCountryAreaMapping(Resources resources){
+
         HashMap<String, String> countryAreaCodeToCountryAreaMapping = new HashMap<>();
-        try(BufferedReader reader = Files.newBufferedReader(pathToFile, StandardCharsets.UTF_8)){
+        InputStream inputStream = resources.openRawResource(R.raw.admin1codesascii);
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
             //First line is just a description i.e. Name,Code
             reader.readLine();
 
