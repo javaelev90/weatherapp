@@ -9,12 +9,16 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.javaelev.weather.weatherapp.handlers.FileLoader;
 
 import org.json.JSONObject;
+import org.xml.sax.XMLReader;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,7 +31,24 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
-                    mTextMessage.setText(R.string.title_home);
+//                    mTextMessage.setText(R.string.title_home);
+                    RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+                    String url = "https://www.yr.no/place/Sweden/Norrbotten/Lule%C3%A5/forecast.xml";
+                    StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+
+                            mTextMessage.setText(response.toString());
+                            System.out.println("GOT RESPONZE");
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.i("Getting forecast","Threw an error");
+                            System.out.println("GETTING FORECAST THREW AN ERROR");
+                        }
+                    });
+                    queue.add(stringRequest);
                     return true;
                 case R.id.navigation_dashboard:
                     mTextMessage.setText(R.string.title_dashboard);
@@ -50,18 +71,7 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         FileLoader fileLoader = new FileLoader();
         fileLoader.makeCountryCodesHashMap(getResources());
-        String url = "https://www.yr.no/place/Sweden/Norrbotten/Lule%C3%A5/forecast.xml";
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                mTextMessage.setText(response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.i("Getting forecast","Threw an error");
-            }
-        });
+
     }
 
 }
