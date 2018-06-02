@@ -1,5 +1,8 @@
 <resources>
+    <string name="symbolURL">http://symbol.yr.no/grafikk/sym/b100/</string>
     <string name="app_name">weatherapp</string>
+    <string name="forecast">Forecast</string>
+    <string name="weather_symbol">Weather symbol</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
