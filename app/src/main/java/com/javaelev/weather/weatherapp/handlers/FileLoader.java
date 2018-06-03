@@ -2,6 +2,8 @@ package com.javaelev.weather.weatherapp.handlers;
 
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.os.Handler;
+import android.os.Message;
 
 import com.javaelev.weather.weatherapp.R;
 import com.javaelev.weather.weatherapp.model.CityInfo;
@@ -15,7 +17,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 // YR forecast url: "https://www.yr.no/place/Sweden/Norrbotten/Lule%C3%A5/forecast.xml"
@@ -44,11 +49,47 @@ import java.util.HashMap;
 //    17 timezone          : the iana timezone id (see file timeZone.txt) varchar(40)
 //    18 modification date : date of last modification in yyyy-MM-dd format
 
-public class FileLoader {
+//Landskode	Stadnamn nynorsk	Stadnamn bokmål	Stadnamn engelsk	Geonames-ID	Stadtype nynorsk	Stadtype bokmål	Stadtype engelsk	Landsnamn nynorsk	Landsnamn bokmål	Landsnamn engelsk	Folketal	Lat	Lon	Høgd over havet	Lenke til nynorsk-XML	Lenke til bokmåls-XML	Lenke til engelsk-XML
 
-    public HashMap<String, String> makeCountryCodesHashMap(Resources resources){
+public class FileLoader extends Thread{
 
-        HashMap<String, String> codeToCountryMapping = new HashMap<>();
+    private Handler handler;
+    private Resources resources;
+    private HashMap<String, String> codeToCountryMapping;
+    private HashMap<String, CityInfo> cityToCityInfoMapping;
+    private HashMap<String, String> countryAreaCodeToCountryAreaMapping;
+
+
+    public FileLoader(Handler handler, Resources resources){
+        this.handler = handler;
+        this.resources = resources;
+    }
+
+    @Override
+    public void run(){
+        makeCityToCityInfoMapping(resources);
+        makeCityAreaCodeToCountryAreaMapping(resources);
+        makeCodeToCountryMapping(resources);
+        List<String> cities = new ArrayList<>(cityToCityInfoMapping.keySet());
+        Message message = handler.obtainMessage(1, cities);
+        message.sendToTarget();
+    }
+
+    public String getCountryName(String countryCode){
+        return codeToCountryMapping.get(countryCode);
+    }
+
+    public CityInfo getCityInfo(String city){
+        return cityToCityInfoMapping.get(city);
+    }
+
+    public String getCountryArea(String areaCode){
+        return countryAreaCodeToCountryAreaMapping.get(areaCode);
+    }
+
+    private HashMap<String, String> makeCodeToCountryMapping(Resources resources){
+
+        codeToCountryMapping = new HashMap<>();
         InputStream inputStream = resources.openRawResource(R.raw.data_csv);
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
             //First line is just a description i.e. Name,Code
@@ -62,7 +103,7 @@ public class FileLoader {
                 //String[] countryAndCode = {line.substring(0, index), line.substring(index+1)};
 
 //                System.out.format("Country: %-50s Code: %-2s%n",countryAndCode[0] , countryAndCode[1]);
-                codeToCountryMapping.put(line.substring(0, index), line.substring(index+1));
+                codeToCountryMapping.put(line.substring(index+1),line.substring(0, index));
                 line = reader.readLine();
             }
         } catch (IOException e) {
@@ -72,9 +113,9 @@ public class FileLoader {
         return codeToCountryMapping;
     }
 
-    public HashMap<String, CityInfo> makeCityToCityInfoMapping(Resources resources){
+    private HashMap<String, CityInfo> makeCityToCityInfoMapping(Resources resources){
 
-        HashMap<String, CityInfo> cityToCountryCodeMapping = new HashMap<>();
+        cityToCityInfoMapping = new HashMap<>();
         InputStream inputStream = resources.openRawResource(R.raw.cities1000);
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
             //First line is just a description i.e. Name,Code
@@ -88,7 +129,7 @@ public class FileLoader {
                 String[] cityAndCountryCode = line.split("\t");
 
 
-                cityToCountryCodeMapping.put(cityAndCountryCode[1], new CityInfo(cityAndCountryCode[1],cityAndCountryCode[10],cityAndCountryCode[8]));
+                cityToCityInfoMapping.put(cityAndCountryCode[1], new CityInfo(cityAndCountryCode[1],cityAndCountryCode[10],cityAndCountryCode[8]));
 //                System.out.format("Country: %-50s Code: %-10s%n",cityAndCountryCode[1].trim() , cityAndCountryCode[8].trim());
 
                 line = reader.readLine();
@@ -98,12 +139,12 @@ public class FileLoader {
         }
 
         System.out.println("Reading all cities done.");
-        return cityToCountryCodeMapping;
+        return cityToCityInfoMapping;
     }
 
-    public HashMap<String, String> makeCityAreaCodeToCountryAreaMapping(Resources resources){
+    private HashMap<String, String> makeCityAreaCodeToCountryAreaMapping(Resources resources){
 
-        HashMap<String, String> countryAreaCodeToCountryAreaMapping = new HashMap<>();
+        countryAreaCodeToCountryAreaMapping = new HashMap<>();
         InputStream inputStream = resources.openRawResource(R.raw.admin1codesascii);
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
             //First line is just a description i.e. Name,Code
@@ -124,7 +165,6 @@ public class FileLoader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         System.out.println("Reading all cities done.");
         return countryAreaCodeToCountryAreaMapping;
     }

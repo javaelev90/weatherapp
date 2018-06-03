@@ -14,6 +14,7 @@ import com.javaelev.weather.weatherapp.R;
 import com.javaelev.weather.weatherapp.model.ForecastItem;
 import com.squareup.picasso.Picasso;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -26,7 +27,8 @@ public class ListAdapter extends ArrayAdapter<ForecastItem>{
         ImageView symbol;
         TextView degrees;
         TextView dateTime;
-        TextView symbolMeaning;
+        TextView windSpeed;
+        TextView precipitation;
     }
 
     public ListAdapter(@NonNull Context context, int resource, @NonNull List<ForecastItem> objects) {
@@ -36,6 +38,10 @@ public class ListAdapter extends ArrayAdapter<ForecastItem>{
 
     }
 
+    public List<ForecastItem> getForecastItems(){
+        return forecastItems;
+    }
+
     public View getView(int position, View convertView, ViewGroup parent){
 
         ForecastItem forecastItem = forecastItems.get(position);
@@ -43,12 +49,13 @@ public class ListAdapter extends ArrayAdapter<ForecastItem>{
         if(convertView == null){
             listItemViewHolder = new ListItemViewHolder();
             LayoutInflater layoutInflater = LayoutInflater.from(context);
-            convertView = layoutInflater.inflate(R.layout.list_view_row, parent, false);
+            convertView = layoutInflater.inflate(R.layout.list_row_layout, parent, false);
 
             listItemViewHolder.symbol = convertView.findViewById(R.id.list_item_weatherSymbol);
             listItemViewHolder.degrees = convertView.findViewById(R.id.list_item_degrees);
             listItemViewHolder.dateTime = convertView.findViewById(R.id.list_item_time);
-            listItemViewHolder.symbolMeaning = convertView.findViewById(R.id.list_item_symbolDescription);
+            listItemViewHolder.windSpeed = convertView.findViewById(R.id.list_item_wind);
+            listItemViewHolder.precipitation = convertView.findViewById(R.id.list_item_precipitation);
             convertView.setTag(listItemViewHolder);
         } else {
             listItemViewHolder = (ListItemViewHolder) convertView.getTag();
@@ -56,10 +63,15 @@ public class ListAdapter extends ArrayAdapter<ForecastItem>{
         //String url for a weather symbol from YR:s API ex. A sun behind a cloud
         String symbolUrl = context.getText(R.string.symbolURL)+forecastItem.getSymbolCode()+".png";
         Picasso.get().load(symbolUrl).into(listItemViewHolder.symbol);
-        listItemViewHolder.symbolMeaning.setText(forecastItem.getSymbolMeaning());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM 'at:' HH:mm");
+        listItemViewHolder.windSpeed.setText(forecastItem.getWindSpeed()+"mps "+forecastItem.getWindDirection());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM 'at:' HH:mm");
         listItemViewHolder.dateTime.setText(forecastItem.getForecastTime().format(formatter).toString());
         listItemViewHolder.degrees.setText((int)forecastItem.getDegreesCelsius()+"\u00b0 C");
+        if(forecastItem.getPrecipitationMin() == forecastItem.getPrecipitationMax()){
+            listItemViewHolder.precipitation.setText(forecastItem.getPrecipitationMin()+" mm rain");
+        } else {
+            listItemViewHolder.precipitation.setText(forecastItem.getPrecipitationMin()+" - "+forecastItem.getPrecipitationMax()+" mm rain");
+        }
 
         return convertView;
     }

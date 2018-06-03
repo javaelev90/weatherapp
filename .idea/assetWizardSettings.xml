@@ -33,7 +33,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_action_search" />
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="C:\Programming\git-repo\weatherapp\app\src\main\res\raw\drawing.png" />
+                                      <entry key="outputName" value="ic_main_activity_icon" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="051e23" />
                                     </map>
@@ -46,6 +48,29 @@
                         <option name="values">
                           <map>
                             <entry key="outputIconType" value="ACTIONBAR" />
+                          </map>
+                        </option>
+                      </PersistentState>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </PersistentState>
+          </value>
+        </entry>
+        <entry key="vectorWizard">
+          <value>
+            <PersistentState>
+              <option name="children">
+                <map>
+                  <entry key="vectorAssetStep">
+                    <value>
+                      <PersistentState>
+                        <option name="values">
+                          <map>
+                            <entry key="assetSourceType" value="FILE" />
+                            <entry key="outputName" value="ic_drawing" />
+                            <entry key="sourceFile" value="C:\Programming\git-repo\weatherapp\app\src\main\res\raw\drawing.svg" />
                           </map>
                         </option>
                       </PersistentState>

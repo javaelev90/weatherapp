@@ -1,7 +1,7 @@
 <resources>
-    <string name="symbolURL">http://symbol.yr.no/grafikk/sym/b100/</string>
+    <string name="symbolURL">https://raw.githubusercontent.com/YR/weather-symbols/master/dist/png/100/</string>
     <string name="app_name">Weatherapp</string>
-    <string name="search_hint">Luleå</string>
+    <string name="search_hint">Enter city name..</string>
     <string name="search">Search</string>
     <string name="forecast">Forecast</string>
     <string name="weather_symbol">Weather symbol</string>
