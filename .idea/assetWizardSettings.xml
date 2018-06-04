@@ -33,9 +33,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="imageAsset" value="C:\Programming\git-repo\weatherapp\app\src\main\res\raw\drawing.png" />
-                                      <entry key="outputName" value="ic_main_activity_icon" />
+                                      <entry key="outputName" value="ic_search_icon" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="051e23" />
                                     </map>
