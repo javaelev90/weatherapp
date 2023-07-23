@@ -24,7 +24,6 @@ public class FileLoader extends Thread{
     private HashMap<String, CityInfo> cityToCityInfoMapping;
     private HashMap<String, String> countryAreaCodeToCountryAreaMapping;
 
-
     public FileLoader(Handler handler, Resources resources){
         this.handler = handler;
         this.resources = resources;

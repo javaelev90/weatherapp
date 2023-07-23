@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -61,7 +62,7 @@ public class ForecastXMLParser {
         float precipitationMax = 0;
         float cloudiness = 0;
 
-        boolean skipElement = false;
+        boolean isTempRangeItem = false;
 
         Node tabular = list.item(0);
         NodeList timeList = tabular.getChildNodes();
@@ -85,15 +86,14 @@ public class ForecastXMLParser {
                     precipitationMin = 0;
                     precipitationMax = 0;
                     cloudiness = 0;
-                    skipElement = false;
+                    isTempRangeItem = false;
 
                     for(int k = 0; k < locationList.getLength(); k++) {
                         if (!(timeList.item(k).getNodeType() == Node.ELEMENT_NODE)) continue;
                         Element locationChild = (Element) locationList.item(k);
                         Element minTemp = getAttribute("minTemperature", locationChild);
                         if(minTemp != null){
-                            skipElement = true;
-                            break;
+                            isTempRangeItem = true;
                         }
 
                         Element symbol = getAttribute("symbol", locationChild);
@@ -105,7 +105,9 @@ public class ForecastXMLParser {
                             String maxValue = precipitation.getAttribute("maxvalue");
                             String minValue = precipitation.getAttribute("minvalue");
 
-                            if (precipitationAvg == 0.0f || (maxValue.equals("") && minValue.equals(""))) {
+                            if (precipitationAvg == 0.0f ||
+                                    (maxValue.equals("0.0") && minValue.equals("0.0")) ||
+                                    (maxValue.equals("") && minValue.equals(""))) {
                                 precipitationMax = precipitationAvg;
                                 precipitationMin = precipitationAvg;
                             } else {
@@ -123,15 +125,34 @@ public class ForecastXMLParser {
                             cloudiness = clouds != null ? Float.parseFloat(clouds.getAttribute("percent")) : 0f;
                         }
                     }
-                    if(skipElement == false){
-                        forecastItem = new ForecastItem(dateTimeFrom, dateTimeTo, windDirection, degreesCelsius, windSpeed, symbolCode, symbolMeaning, precipitationMin, precipitationMax, cloudiness);
-                        forecast.add(forecastItem);
-                    }
+                    forecastItem = new ForecastItem(dateTimeFrom, dateTimeTo, windDirection, degreesCelsius, windSpeed, symbolCode, symbolMeaning, precipitationMin, precipitationMax, cloudiness);
+                    forecastItem.setTempRangeItem(isTempRangeItem);
+
+                    forecast.add(forecastItem);
                 }
             }
         }
 
-        return mergeForecastItems(forecast);
+        return mergeForecastItems(removeDuplicates(forecast));
+    }
+
+    private List<ForecastItem> removeDuplicates(List<ForecastItem> items){
+        List<ForecastItem> itemsToRemove = new ArrayList<>();
+        for(ForecastItem item : items) {
+            for(ForecastItem item2 : items){
+                if (item.equals(item2)) continue;
+
+                if(item.getSymbolCode().equals("") == false &&
+                        item2.isTempRangeItem() == true &&
+                        item.getForecastTimeTo().equals(item2.getForecastTimeTo())) {
+                    itemsToRemove.add(item2);
+                    break;
+                }
+
+            }
+        }
+        List<ForecastItem> filteredList = items.stream().filter(item -> !itemsToRemove.contains(item)).collect(Collectors.toList());
+        return filteredList;
     }
 
     private Element getAttribute(String name, Element element){
@@ -142,22 +163,28 @@ public class ForecastXMLParser {
         items.sort(Comparator.comparing(ForecastItem::getForecastTimeTo));
 
         List<ForecastItem> mergedList = new ArrayList<>();
-        for(int i = 0; i < items.size() && i+1 < items.size(); i+=2){
-            ForecastItem item1 = items.get(i);
-            ForecastItem item2 = items.get(i+1);
+        List<ForecastItem> alreadyAddedList = new ArrayList<>();
 
-            if (item1.getForecastTimeFrom().equals(item1.getForecastTimeTo())){
-                mergedList.add(mergeForecastPair(item1, item2));
-            } else {
-                mergedList.add(mergeForecastPair(item2, item1));
+        for(ForecastItem item : items) {
+            for(ForecastItem item2 : items){
+                if (item.equals(item2) ||
+                    alreadyAddedList.contains(item2) ||
+                    alreadyAddedList.contains(item)) continue;
+
+                if (item.getForecastTimeFrom().equals(item.getForecastTimeTo())){
+                    mergedList.add(mergeForecastPair(item, item2));
+                } else {
+                    mergedList.add(mergeForecastPair(item2, item));
+                }
+                alreadyAddedList.add(item);
+                alreadyAddedList.add(item2);
+                break;
             }
         }
         return mergedList;
     }
     private ForecastItem mergeForecastPair(ForecastItem item1, ForecastItem item2){
         ForecastItem merged = new ForecastItem();
-        merged.setForecastTimeFrom(item1.getForecastTimeFrom());
-        merged.setForecastTimeTo(item1.getForecastTimeTo());
         merged.setForecastTimeFrom(item1.getForecastTimeFrom());
         merged.setForecastTimeTo(item1.getForecastTimeTo());
         merged.setCloudiness(item1.getCloudiness());

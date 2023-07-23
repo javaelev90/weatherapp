@@ -10,7 +10,7 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/header-degrees"
+        android:id="@+id/header_degrees"
         android:layout_width="124dp"
         android:layout_height="86dp"
         android:layout_marginEnd="43dp"
@@ -19,9 +19,9 @@
         android:gravity="center"
         android:textSize="46sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/header-time"
+        app:layout_constraintBottom_toTopOf="@+id/header_time"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/header-symbol"
+        app:layout_constraintStart_toEndOf="@+id/header_symbol"
         app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -42,7 +42,7 @@
         app:layout_constraintTop_toBottomOf="@+id/my_toolbar" />
 
     <ImageView
-        android:id="@+id/header-symbol"
+        android:id="@+id/header_symbol"
         android:layout_width="96dp"
         android:layout_height="86dp"
         android:layout_gravity="center"
@@ -50,13 +50,13 @@
         android:layout_marginTop="88dp"
         android:adjustViewBounds="false"
         android:contentDescription="@string/weather_symbol"
-        app:layout_constraintBottom_toTopOf="@+id/header-wind-info"
-        app:layout_constraintEnd_toStartOf="@+id/header-degrees"
+        app:layout_constraintBottom_toTopOf="@+id/header_wind_info"
+        app:layout_constraintEnd_toStartOf="@+id/header_degrees"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/header-time"
+        android:id="@+id/header_time"
         android:layout_width="180dp"
         android:layout_height="46dp"
         android:layout_marginBottom="1dp"
@@ -67,24 +67,24 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/header-wind-info"
-        app:layout_constraintTop_toBottomOf="@+id/header-degrees" />
+        app:layout_constraintStart_toEndOf="@+id/header_wind_info"
+        app:layout_constraintTop_toBottomOf="@+id/header_degrees" />
 
     <TextView
-        android:id="@+id/header-wind-info"
+        android:id="@+id/header_wind_info"
         android:layout_width="180dp"
         android:layout_height="23dp"
         android:layout_marginStart="16dp"
         android:gravity="center"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/header-rain-info"
-        app:layout_constraintEnd_toStartOf="@+id/header-time"
+        app:layout_constraintBottom_toTopOf="@+id/header_rain_info"
+        app:layout_constraintEnd_toStartOf="@+id/header_time"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header-symbol" />
+        app:layout_constraintTop_toBottomOf="@+id/header_symbol" />
 
     <TextView
-        android:id="@+id/header-rain-info"
+        android:id="@+id/header_rain_info"
         android:layout_width="180dp"
         android:layout_height="23dp"
         android:layout_marginBottom="1dp"
@@ -94,10 +94,10 @@
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
-        app:layout_constraintEnd_toStartOf="@+id/header-time"
+        app:layout_constraintEnd_toStartOf="@+id/header_time"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header-wind-info" />
+        app:layout_constraintTop_toBottomOf="@+id/header_wind_info" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -149,7 +149,7 @@
     </ListView>
 
     <TextView
-        android:id="@+id/header-city"
+        android:id="@+id/header_city"
         android:layout_width="0dp"
         android:layout_height="30dp"
         android:layout_marginBottom="8dp"
@@ -164,6 +164,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/my_toolbar"
         app:layout_constraintVertical_bias="0.0" />
+
+    <ImageButton
+        android:id="@+id/starredCityBtn"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="7dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="7dp"
+        android:background="#BDE8E5"
+        android:contentDescription="star"
+        app:layout_constraintEnd_toStartOf="@+id/header_symbol"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_city"
+        app:srcCompat="@android:drawable/btn_star_big_off" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

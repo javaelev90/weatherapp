@@ -14,6 +14,7 @@ public class ForecastItem {
     private float degreesCelsius;
     private float windSpeed;
     private float cloudiness;
+    private boolean isTempRangeItem;
     public ForecastItem(){
     }
     public ForecastItem(LocalDateTime forecastTimeFrom, LocalDateTime forecastTimeTo, String windDirection,
@@ -106,5 +107,13 @@ public class ForecastItem {
 
     public void setCloudiness(float cloudiness) {
         this.cloudiness = cloudiness;
+    }
+
+    public boolean isTempRangeItem() {
+        return isTempRangeItem;
+    }
+
+    public void setTempRangeItem(boolean tempRangeItem) {
+        isTempRangeItem = tempRangeItem;
     }
 }
