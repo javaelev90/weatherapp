@@ -1,4 +1,4 @@
-line.substring(index+1)AF.01.1109	Shighnan District	Shighnan District	1125426
+AF.01.1109	Shighnan District	Shighnan District	1125426
 AF.08.609	Gēlān	Gelan	1140918
 AF.01.1114	Arghanj Khwāh	Arghanj Khwah	7052641
 AF.01.1115	Argō	Argo	7052663

@@ -4,7 +4,8 @@ import java.time.LocalDateTime;
 
 public class ForecastItem {
 
-    private LocalDateTime forecastTime;
+    private LocalDateTime forecastTimeFrom;
+    private LocalDateTime forecastTimeTo;
     private String windDirection;
     private String symbolMeaning;
     private String symbolCode;
@@ -12,11 +13,14 @@ public class ForecastItem {
     private float precipitationMax;
     private float degreesCelsius;
     private float windSpeed;
-
-    public ForecastItem(LocalDateTime forecastTime, String windDirection,
+    private float cloudiness;
+    public ForecastItem(){
+    }
+    public ForecastItem(LocalDateTime forecastTimeFrom, LocalDateTime forecastTimeTo, String windDirection,
                         float degreesCelsius, float windSpeed, String symbolCode,
-                        String symbolMeaning, float precipitationMin, float precipitationMax){
-        this.forecastTime = forecastTime;
+                        String symbolMeaning, float precipitationMin, float precipitationMax, float cloudiness){
+        this.forecastTimeFrom = forecastTimeFrom;
+        this.forecastTimeTo = forecastTimeTo;
         this.windDirection = windDirection;
         this.degreesCelsius = degreesCelsius;
         this.windSpeed = windSpeed;
@@ -24,6 +28,7 @@ public class ForecastItem {
         this.symbolMeaning = symbolMeaning;
         this.precipitationMax = precipitationMax;
         this.precipitationMin = precipitationMin;
+        this.cloudiness = cloudiness;
     }
 
     public float getPrecipitationMin() {
@@ -54,7 +59,52 @@ public class ForecastItem {
         return symbolCode;
     }
 
-    public LocalDateTime getForecastTime() {
-        return forecastTime;
+    public LocalDateTime getForecastTimeFrom() {
+        return forecastTimeFrom;
+    }
+    public LocalDateTime getForecastTimeTo() {
+        return forecastTimeTo;
+    }
+    public float getCloudiness() { return cloudiness; }
+
+
+    public void setForecastTimeFrom(LocalDateTime forecastTimeFrom) {
+        this.forecastTimeFrom = forecastTimeFrom;
+    }
+
+    public void setForecastTimeTo(LocalDateTime forecastTimeTo) {
+        this.forecastTimeTo = forecastTimeTo;
+    }
+
+    public void setWindDirection(String windDirection) {
+        this.windDirection = windDirection;
+    }
+
+    public void setSymbolMeaning(String symbolMeaning) {
+        this.symbolMeaning = symbolMeaning;
+    }
+
+    public void setSymbolCode(String symbolCode) {
+        this.symbolCode = symbolCode;
+    }
+
+    public void setPrecipitationMin(float precipitationMin) {
+        this.precipitationMin = precipitationMin;
+    }
+
+    public void setPrecipitationMax(float precipitationMax) {
+        this.precipitationMax = precipitationMax;
+    }
+
+    public void setDegreesCelsius(float degreesCelsius) {
+        this.degreesCelsius = degreesCelsius;
+    }
+
+    public void setWindSpeed(float windSpeed) {
+        this.windSpeed = windSpeed;
+    }
+
+    public void setCloudiness(float cloudiness) {
+        this.cloudiness = cloudiness;
     }
 }

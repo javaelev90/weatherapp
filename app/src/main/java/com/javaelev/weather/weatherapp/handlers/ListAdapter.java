@@ -1,7 +1,6 @@
 package com.javaelev.weather.weatherapp.handlers;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +8,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 
 import com.javaelev.weather.weatherapp.R;
 import com.javaelev.weather.weatherapp.model.ForecastItem;
 import com.squareup.picasso.Picasso;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -65,7 +64,7 @@ public class ListAdapter extends ArrayAdapter<ForecastItem>{
         Picasso.get().load(symbolUrl).into(listItemViewHolder.symbol);
         listItemViewHolder.windSpeed.setText(forecastItem.getWindSpeed()+"mps "+forecastItem.getWindDirection());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM 'at:' HH:mm");
-        listItemViewHolder.dateTime.setText(forecastItem.getForecastTime().format(formatter).toString());
+        listItemViewHolder.dateTime.setText(forecastItem.getForecastTimeFrom().format(formatter));
         listItemViewHolder.degrees.setText((int)forecastItem.getDegreesCelsius()+"\u00b0 C");
         if(forecastItem.getPrecipitationMin() == forecastItem.getPrecipitationMax()){
             listItemViewHolder.precipitation.setText(forecastItem.getPrecipitationMin()+" mm rain");

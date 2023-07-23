@@ -1,6 +1,5 @@
 package com.javaelev.weather.weatherapp.handlers;
 
-import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Message;
@@ -10,17 +9,12 @@ import com.javaelev.weather.weatherapp.model.CityInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
 
 // YR forecast url: "https://www.yr.no/place/Sweden/Norrbotten/Lule%C3%A5/forecast.xml"
@@ -63,13 +57,30 @@ public class FileLoader extends Thread{
     public FileLoader(Handler handler, Resources resources){
         this.handler = handler;
         this.resources = resources;
+        codeToCountryMapping = new HashMap<>();
+        cityToCityInfoMapping = new HashMap<>();
+        countryAreaCodeToCountryAreaMapping = new HashMap<>();
     }
 
     @Override
     public void run(){
-        makeCityToCityInfoMapping(resources);
-        makeCityAreaCodeToCountryAreaMapping(resources);
-        makeCodeToCountryMapping(resources);
+        map((lineInput) -> {
+            String[] cityAndCountryCode = lineInput.split("\t");
+            cityToCityInfoMapping.put(cityAndCountryCode[1], new CityInfo(cityAndCountryCode[1],
+                    cityAndCountryCode[10],cityAndCountryCode[8], Float.parseFloat(cityAndCountryCode[4]),
+                    Float.parseFloat(cityAndCountryCode[5])));
+        },
+        R.raw.cities1000);
+        map((lineString) -> {
+            String[] cityAndCountryCode = lineString.split("\t");
+            countryAreaCodeToCountryAreaMapping.put(cityAndCountryCode[0],cityAndCountryCode[1]);
+        },
+        R.raw.admin1codesascii);
+        map((lineString) -> {
+            int index = lineString.lastIndexOf(",");
+            codeToCountryMapping.put(lineString.substring(index+1),lineString.substring(0, index));
+        },
+        R.raw.data_csv);
         List<String> cities = new ArrayList<>(cityToCityInfoMapping.keySet());
         Message message = handler.obtainMessage(1, cities);
         message.sendToTarget();
@@ -87,86 +98,103 @@ public class FileLoader extends Thread{
         return countryAreaCodeToCountryAreaMapping.get(areaCode);
     }
 
-    private HashMap<String, String> makeCodeToCountryMapping(Resources resources){
-
-        codeToCountryMapping = new HashMap<>();
-        InputStream inputStream = resources.openRawResource(R.raw.data_csv);
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
+    private void map(Consumer<String> mapper, int resourceId){
+        try(InputStream inputStream = resources.openRawResource(resourceId);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
             //First line is just a description i.e. Name,Code
             reader.readLine();
 
             //First actual (country, country code) line
             String line = reader.readLine();
-            int index;
             while(line != null){
-                index = line.lastIndexOf(",");
-                //String[] countryAndCode = {line.substring(0, index), line.substring(index+1)};
-
-//                System.out.format("Country: %-50s Code: %-2s%n",countryAndCode[0] , countryAndCode[1]);
-                codeToCountryMapping.put(line.substring(index+1),line.substring(0, index));
+                mapper.accept(line);
                 line = reader.readLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Country to code mapping done.");
-        return codeToCountryMapping;
     }
 
-    private HashMap<String, CityInfo> makeCityToCityInfoMapping(Resources resources){
+//    private HashMap<String, String> map(Resources resources){
+//
+//        codeToCountryMapping = new HashMap<>();
+//        InputStream inputStream = resources.openRawResource(R.raw.data_csv);
+//        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
+//            //First line is just a description i.e. Name,Code
+//            reader.readLine();
+//
+//            //First actual (country, country code) line
+//            String line = reader.readLine();
+//            int index;
+//            while(line != null){
+//                index = line.lastIndexOf(",");
+//                //String[] countryAndCode = {line.substring(0, index), line.substring(index+1)};
+//
+////                System.out.format("Country: %-50s Code: %-2s%n",countryAndCode[0] , countryAndCode[1]);
+//                codeToCountryMapping.put(line.substring(index+1),line.substring(0, index));
+//                line = reader.readLine();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("Country to code mapping done.");
+//        return codeToCountryMapping;
+//    }
 
-        cityToCityInfoMapping = new HashMap<>();
-        InputStream inputStream = resources.openRawResource(R.raw.cities1000);
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
-            //First line is just a description i.e. Name,Code
-            reader.readLine();
+//    private HashMap<String, CityInfo> makeCityToCityInfoMapping(Resources resources){
+//
+//        cityToCityInfoMapping = new HashMap<>();
+//        InputStream inputStream = resources.openRawResource(R.raw.cities1000);
+//        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
+//            //First line is just a description i.e. Name,Code
+//            reader.readLine();
+//
+//            //First actual (country, country code) line
+//            String line = reader.readLine();
+//
+//            while(line != null){
+//                //line.replaceAll("[\t]+", "\t");
+//                String[] cityAndCountryCode = line.split("\t");
+//
+//
+//                cityToCityInfoMapping.put(cityAndCountryCode[1], new CityInfo(cityAndCountryCode[1],cityAndCountryCode[10],cityAndCountryCode[8]));
+////                System.out.format("Country: %-50s Code: %-10s%n",cityAndCountryCode[1].trim() , cityAndCountryCode[8].trim());
+//
+//                line = reader.readLine();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println("Reading all cities done.");
+//        return cityToCityInfoMapping;
+//    }
 
-            //First actual (country, country code) line
-            String line = reader.readLine();
-
-            while(line != null){
-                //line.replaceAll("[\t]+", "\t");
-                String[] cityAndCountryCode = line.split("\t");
-
-
-                cityToCityInfoMapping.put(cityAndCountryCode[1], new CityInfo(cityAndCountryCode[1],cityAndCountryCode[10],cityAndCountryCode[8]));
-//                System.out.format("Country: %-50s Code: %-10s%n",cityAndCountryCode[1].trim() , cityAndCountryCode[8].trim());
-
-                line = reader.readLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Reading all cities done.");
-        return cityToCityInfoMapping;
-    }
-
-    private HashMap<String, String> makeCityAreaCodeToCountryAreaMapping(Resources resources){
-
-        countryAreaCodeToCountryAreaMapping = new HashMap<>();
-        InputStream inputStream = resources.openRawResource(R.raw.admin1codesascii);
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
-            //First line is just a description i.e. Name,Code
-            reader.readLine();
-
-            //First actual (country, country code) line
-            String line = reader.readLine();
-
-            while(line != null){
-                //line.replaceAll("[\t]+", "\t");
-                String[] cityAndCountryCode = line.split("\t");
-
-                countryAreaCodeToCountryAreaMapping.put(cityAndCountryCode[0],cityAndCountryCode[1]);
-//                System.out.format("Country: %-50s Code: %-10s%n",cityAndCountryCode[1].trim() , cityAndCountryCode[8].trim());
-
-                line = reader.readLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Reading all cities done.");
-        return countryAreaCodeToCountryAreaMapping;
-    }
+//    private HashMap<String, String> makeCityAreaCodeToCountryAreaMapping(Resources resources){
+//
+//        countryAreaCodeToCountryAreaMapping = new HashMap<>();
+//        InputStream inputStream = resources.openRawResource(R.raw.admin1codesascii);
+//        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
+//            //First line is just a description i.e. Name,Code
+//            reader.readLine();
+//
+//            //First actual (country, country code) line
+//            String line = reader.readLine();
+//
+//            while(line != null){
+//                //line.replaceAll("[\t]+", "\t");
+//                String[] cityAndCountryCode = line.split("\t");
+//
+//                countryAreaCodeToCountryAreaMapping.put(cityAndCountryCode[0],cityAndCountryCode[1]);
+////                System.out.format("Country: %-50s Code: %-10s%n",cityAndCountryCode[1].trim() , cityAndCountryCode[8].trim());
+//
+//                line = reader.readLine();
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println("Reading all cities done.");
+//        return countryAreaCodeToCountryAreaMapping;
+//    }
 
 }
