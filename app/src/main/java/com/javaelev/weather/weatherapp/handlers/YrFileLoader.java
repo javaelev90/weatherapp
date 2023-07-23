@@ -51,9 +51,6 @@ public class YrFileLoader extends Thread{
             String line = reader.readLine();
             while(line != null){
                 String[] cityAndCountryCode = line.split("\t");
-                //String[] countryAndCode = {line.substring(0, index), line.substring(index+1)};
-
-//                System.out.format("Country: %-50s Code: %-2s%n",countryAndCode[0] , countryAndCode[1]);
                 cityToAPIURL.put(cityAndCountryCode[keyIndex],cityAndCountryCode[cityAndCountryCode.length-1]);
                 line = reader.readLine();
             }

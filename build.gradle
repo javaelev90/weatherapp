@@ -12,42 +12,6 @@ buildscript {
     }
 
 }
-//plugins {
-//    id 'java-library'
-//}
-//
-//configurations {
-//    jaxb
-//}
-//
-//dependencies {
-//    jaxb (
-//            'com.sun.xml.bind:jaxb-xjc:2.3.1',
-//            'com.sun.xml.bind:jaxb-impl:2.3.1',
-//            'org.glassfish.jaxb:jaxb-runtime:2.3.3'
-//    )
-//}
-//
-//task jaxb {
-//    System.setProperty('javax.xml.accessExternalSchema', 'all')
-//    def jaxbTargetDir = file("app/build/generated/source/jaxb")
-//    doLast {
-//        jaxbTargetDir.mkdirs()
-//        ant.taskdef(
-//                name: 'xjc',
-//                classname: 'com.sun.tools.xjc.XJCTask',
-//                classpath: configurations.jaxb.asPath
-//        )
-//        ant.jaxbTargetDir = jaxbTargetDir
-//        ant.xjc(
-//                destdir: '${jaxbTargetDir}',
-//                package: 'com.javaelev.weather.weatherapp.jaxb',
-//                schema: 'app/src/main/res/raw/schema/weather_api.xsd'
-//        )
-//    }
-//}
-//
-//compileJava.dependsOn jaxb
 
 allprojects {
     repositories {

@@ -18,6 +18,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+// API
 // https://api.met.no/weatherapi/locationforecast/2.0/documentation
 public class ForecastXMLParser {
 

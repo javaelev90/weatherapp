@@ -68,13 +68,10 @@ public class MainActivity extends AppCompatActivity {
         };
         fileLoader = new FileLoader(handler, getResources());
         fileLoader.start();
-//        yrFileLoader = new YrFileLoader(handler, getResources());
-//        yrFileLoader.start();
 
         searchView.setOnItemClickListener((parent, view, position, id) -> {
             String cityName = (String)parent.getAdapter().getItem(position);
             loadForecast(buildUrl(cityName), cityName);
-//            loadForecast(yrFileLoader.getForecastURL(cityName), cityName);
             searchView.dismissDropDown();
             searchView.setText("");
             hideKeyboard();
@@ -88,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
                     String cityName = (String) searchView.getAdapter().getItem(0);
                     System.out.println(cityName);
                     loadForecast(buildUrl(cityName), cityName);
-//                    loadForecast(yrFileLoader.getForecastURL(cityName), cityName);
                     searchView.dismissDropDown();
                     searchView.setText("");
                 }
