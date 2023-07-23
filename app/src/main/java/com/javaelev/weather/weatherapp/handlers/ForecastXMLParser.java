@@ -42,6 +42,10 @@ public class ForecastXMLParser {
         return null;
     }
 
+    /*
+        Very annoying API to make a parser for. The same day is divided into different elements without
+        any apparent reason.
+     */
     private List<ForecastItem> getForeCastItemsFromNodeList(NodeList list){
         List<ForecastItem> forecast = new ArrayList<>();
         ForecastItem forecastItem;
@@ -56,6 +60,9 @@ public class ForecastXMLParser {
         float precipitationMin = 0;
         float precipitationMax = 0;
         float cloudiness = 0;
+
+        boolean skipElement = false;
+
         Node tabular = list.item(0);
         NodeList timeList = tabular.getChildNodes();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -78,12 +85,18 @@ public class ForecastXMLParser {
                     precipitationMin = 0;
                     precipitationMax = 0;
                     cloudiness = 0;
+                    skipElement = false;
 
                     for(int k = 0; k < locationList.getLength(); k++) {
                         if (!(timeList.item(k).getNodeType() == Node.ELEMENT_NODE)) continue;
                         Element locationChild = (Element) locationList.item(k);
-                        Element symbol = getAttribute("symbol", locationChild);
+                        Element minTemp = getAttribute("minTemperature", locationChild);
+                        if(minTemp != null){
+                            skipElement = true;
+                            break;
+                        }
 
+                        Element symbol = getAttribute("symbol", locationChild);
                         if(symbol != null){
                             symbolMeaning = symbol.getAttribute("id");
                             symbolCode = symbol.getAttribute("code");
@@ -110,8 +123,10 @@ public class ForecastXMLParser {
                             cloudiness = clouds != null ? Float.parseFloat(clouds.getAttribute("percent")) : 0f;
                         }
                     }
-                    forecastItem = new ForecastItem(dateTimeFrom, dateTimeTo, windDirection, degreesCelsius, windSpeed, symbolCode, symbolMeaning, precipitationMin, precipitationMax, cloudiness);
-                    forecast.add(forecastItem);
+                    if(skipElement == false){
+                        forecastItem = new ForecastItem(dateTimeFrom, dateTimeTo, windDirection, degreesCelsius, windSpeed, symbolCode, symbolMeaning, precipitationMin, precipitationMax, cloudiness);
+                        forecast.add(forecastItem);
+                    }
                 }
             }
         }
@@ -125,6 +140,7 @@ public class ForecastXMLParser {
 
     private List<ForecastItem> mergeForecastItems(List<ForecastItem> items){
         items.sort(Comparator.comparing(ForecastItem::getForecastTimeTo));
+
         List<ForecastItem> mergedList = new ArrayList<>();
         for(int i = 0; i < items.size() && i+1 < items.size(); i+=2){
             ForecastItem item1 = items.get(i);

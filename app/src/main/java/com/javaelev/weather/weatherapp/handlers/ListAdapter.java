@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 
 import com.javaelev.weather.weatherapp.R;
 import com.javaelev.weather.weatherapp.model.ForecastItem;
-import com.squareup.picasso.Picasso;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -59,9 +58,9 @@ public class ListAdapter extends ArrayAdapter<ForecastItem>{
         } else {
             listItemViewHolder = (ListItemViewHolder) convertView.getTag();
         }
-        //String url for a weather symbol from YR:s API ex. A sun behind a cloud
-        String symbolUrl = context.getText(R.string.symbolURL)+forecastItem.getSymbolCode()+".png";
-        Picasso.get().load(symbolUrl).into(listItemViewHolder.symbol);
+
+        int symbolResource = context.getResources().getIdentifier(forecastItem.getSymbolCode(), "drawable", context.getPackageName());
+        listItemViewHolder.symbol.setImageResource(symbolResource);
         listItemViewHolder.windSpeed.setText(forecastItem.getWindSpeed()+"mps "+forecastItem.getWindDirection());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMM 'at:' HH:mm");
         listItemViewHolder.dateTime.setText(forecastItem.getForecastTimeFrom().format(formatter));

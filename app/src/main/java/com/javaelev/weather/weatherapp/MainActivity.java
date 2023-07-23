@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView degrees = findViewById(R.id.header_degrees);
                 TextView wind = findViewById(R.id.header_wind_info);
                 ImageView symbol = findViewById(R.id.header_symbol);
+
                 ForecastItem firstItem = forecast.get(0);
                 city.setText(cityName);
                 time.setText("Today at: "+firstItem.getForecastTimeFrom().toLocalTime().toString());
@@ -138,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
                 }  else {
                     precipitation.setText(firstItem.getPrecipitationMin()+" - "+firstItem.getPrecipitationMax()+" mm");
                 }
-//                String symbolUrl = "https://raw.githubusercontent.com/YR/weather-symbols/master/dist/png/100/"+firstItem.getSymbolCode()+".png";
-////                String symbolUrl = "http://symbol.yr.no/grafikk/sym/b200/"+firstItem.getSymbolCode()+".png";
-//                Picasso.get().load(symbolUrl).into(symbol);
+
+                int symbolResource = getResources().getIdentifier(firstItem.getSymbolCode(), "drawable", getPackageName());
+                symbol.setImageResource(symbolResource);
                 forecast.remove(0);
                 adapter.addAll(forecast);
                 adapter.notifyDataSetChanged();
